@@ -1,3 +1,6 @@
 testing/*
 .vscode
 implementation_plan.md
+__pycache__/*
+*.pyc
+*.pyo
