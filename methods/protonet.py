@@ -8,14 +8,14 @@ class ProtoNet(BaseMetaMethod):
         model.train()
         support_embs, support_pos = [], []
         for b in support:
-            price, news, tf, _ = b
+            price, news, tf, tar = b
             hp, hn, ht = model._encode(price, news, tf)
             h_fused = model.fusion(hp, hn, ht)
             ctx = model._temporal_aggregate(h_fused)
             p_ctx = model._temporal_aggregate(hp)
             emb = torch.cat([ctx, p_ctx], dim=-1)
             support_embs.append(emb)
-            support_pos.append(model.position_head(emb))
+            support_pos.append(tar)
             
         if not support_embs:
             q_loss_total, n = 0.0, 0
@@ -67,14 +67,14 @@ class ProtoNet(BaseMetaMethod):
         S_emb_list, S_pos_list = [], []
         with torch.no_grad():
             for b in support:
-                price, news, tf, _ = b
+                price, news, tf, tar = b
                 hp, hn, ht = model._encode(price, news, tf)
                 h_fused = model.fusion(hp, hn, ht)
                 ctx = model._temporal_aggregate(h_fused)
                 p_ctx = model._temporal_aggregate(hp)
                 emb = torch.cat([ctx, p_ctx], dim=-1)
                 S_emb_list.append(emb)
-                S_pos_list.append(model.position_head(emb))
+                S_pos_list.append(tar)
         if S_emb_list:
             S_emb = torch.cat(S_emb_list, dim=0)
             S_pos = torch.cat(S_pos_list, dim=0)

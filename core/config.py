@@ -1,5 +1,5 @@
 # core/config.py
-VERSION         = "V1"
+VERSION         = "V1.2"
 WINDOW          = 100
 NUM_ASSETS      = 50
 NEWS_DIM        = 384

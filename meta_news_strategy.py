@@ -255,7 +255,7 @@ def main():
     # Select Fusion Strategy (Modular)
     fusion_strategy_class = FUSION_STRATEGIES["gated"]
 
-    for method in ["fomaml", "anil", "protonet"]:
+    for method in ["protonet"]:
         print(f"\n{'═'*60}")
         print(f"  EVALUATING METHOD: {method.upper()}")
         print(f"{'═'*60}")
