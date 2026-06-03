@@ -65,8 +65,8 @@ class M2VNLite(nn.Module):
             nn.Linear(2 * d, d), nn.GELU(), nn.Dropout(0.1),
             nn.Linear(d, num_assets),
             # nn.Tanh(),
-            # Asinh(),
-            LearnableLogSign(),
+            Asinh(),
+            # LearnableLogSign(),
         )
 
     # ────────────────────────────────────────────────
@@ -126,7 +126,8 @@ class Asinh(nn.Module):
         super().__init__()
         self.alpha = nn.Parameter(torch.tensor(alpha).log())
     def forward(self, x):
-        return torch.asinh(self.alpha*x)
+        alpha = self.alpha.exp()
+        return torch.asinh(alpha*x)
     
 class LearnableLogSign(nn.Module):
     def __init__(self, alpha=1.0):
