@@ -4,3 +4,4 @@ implementation_plan.md
 __pycache__/*
 *.pyc
 *.pyo
+*.DS_Store
