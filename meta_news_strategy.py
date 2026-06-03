@@ -69,7 +69,7 @@ def meta_train(model, dataset, task_months, method_name="fomaml",
         avg = np.mean(losses) if losses else float("nan")
         print(f"  Epoch {epoch:2d}/{epochs}  ·  Avg task loss: {avg:.6f}")
 
-    return model
+    return model, avg
 
 
 def backtest(model, dataset, test_months, client, method_name="fomaml",
@@ -149,7 +149,7 @@ def plot_comparison(all_results: dict, save_path: str):
     fig, axes = plt.subplots(n, 1, figsize=(14, 5.5 * n), squeeze=False)
     palette = {"fomaml": "#E84855", "anil": "#2EC4B6", "protonet": "#FF9F1C"}
 
-    for i, (method, (res, pos, _)) in enumerate(all_results.items()):
+    for i, (method, (res, pos, _, final_loss)) in enumerate(all_results.items()):
         ax = axes[i][0]
         inc_pnl   = res["incremental_pnl"]
         cum_pnl   = np.cumsum(inc_pnl)
@@ -178,7 +178,7 @@ def plot_comparison(all_results: dict, save_path: str):
         profit  = res["total_profit"] * 100
         sharpe  = res["sharpe_ratio"]
         mean_r  = res["mean_return"]
-        ax.set_title(f"{method.upper()}  ·  Profit: {profit:+.2f}%  "
+        ax.set_title(f"{method.upper()}  ·  Loss: {final_loss:.4f}  ·  Profit: {profit:+.2f}%  "
                      f"·  Sharpe: {sharpe:.3f}  ·  Mean ret: {mean_r:.6f}",
                      fontsize=13, fontweight="bold")
 
@@ -262,6 +262,7 @@ def main():
         
         all_method_pos = []
         all_method_tgt = []
+        all_method_loss = []
 
         for train_yr, test_yr in walk_forward_periods:
             print(f"\n  ► Walk-Forward Period: Train {train_yr} → Test {test_yr}")
@@ -283,7 +284,8 @@ def main():
                 n_params = sum(p.numel() for p in model.parameters())
                 print(f"  Model: {n_params:,} parameters")
 
-            model = meta_train(model, ds, train_months, method_name=method)
+            model, final_loss = meta_train(model, ds, train_months, method_name=method)
+            all_method_loss.append(final_loss)
 
             try:
                 out = backtest(model, ds, test_months, client, method_name=method, run_api_backtest=False)
@@ -309,7 +311,8 @@ def main():
                                             torch.tensor(final_targets),
                                             txn_cost=TXN_COST)
                                             
-        all_results[method] = (results, final_positions, final_targets)
+        avg_method_loss = np.mean(all_method_loss)
+        all_results[method] = (results, final_positions, final_targets, avg_method_loss)
 
         invested_total = np.sum(1.0 - final_positions[:, 0])
         profit_pct     = results["total_profit"] * 100
@@ -317,6 +320,7 @@ def main():
                           if invested_total > 0 else 0)
 
         print(f"\n  ┌─── {method.upper()} Walk-Forward Results (2024-2026) {'─'*2}┐")
+        print(f"  │  Avg Task Loss         : {avg_method_loss:.6f}")
         print(f"  │  Profit (vs portfolio) : {profit_pct:+.2f}%")
         print(f"  │  Cumulative invested   : {invested_total:.2f} units")
         print(f"  │  Profit / invested     : {roi:+.4f}%")
