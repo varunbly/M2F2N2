@@ -1,17 +1,17 @@
 # core/config.py
-VERSION         = "V1"
+VERSION         = "V1.0.2"
 WINDOW          = 100
 NUM_ASSETS      = 50
 NEWS_DIM        = 384
-LATENT_DIM      = 64
-ALIGN_DIM       = 32
+LATENT_DIM      = 50
+ALIGN_DIM       = 25
 TIME_FEATS      = 4
 INNER_LR        = 0.005
 META_LR         = 0.0005
 INNER_STEPS     = 3
 LAMBDA_ALIGN    = 0.1
 TEMPERATURE     = 0.07
-META_EPOCHS     = 25
+META_EPOCHS     = 10
 BATCH_SIZE      = 8
 MAX_WEIGHT      = 0.07
 TXN_COST        = 0.001

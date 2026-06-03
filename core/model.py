@@ -64,7 +64,8 @@ class M2VNLite(nn.Module):
         self.position_head = nn.Sequential(
             nn.Linear(2 * d, d), nn.GELU(), nn.Dropout(0.1),
             nn.Linear(d, num_assets),
-            nn.Tanh(),
+            # nn.Tanh(),
+            Asinh(),
         )
 
     # ────────────────────────────────────────────────
@@ -118,3 +119,7 @@ class M2VNLite(nn.Module):
     def head_param_names(self):
         return {n for n, _ in self.named_parameters()
                 if n.startswith("position_head.")}
+
+class Asinh(nn.Module):
+    def forward(self, x):
+        return torch.asinh(x)
