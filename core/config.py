@@ -1,10 +1,10 @@
 # core/config.py
-VERSION         = "V1.0.2"
+VERSION         = "V1.0.3"
 WINDOW          = 100
 NUM_ASSETS      = 50
 NEWS_DIM        = 384
-LATENT_DIM      = 50
-ALIGN_DIM       = 25
+LATENT_DIM      = 64
+ALIGN_DIM       = 32
 TIME_FEATS      = 4
 INNER_LR        = 0.005
 META_LR         = 0.0005
